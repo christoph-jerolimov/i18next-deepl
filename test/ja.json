@@ -1,1 +1,12 @@
-{}
+{
+  "car": "車",
+  "boat": "ボート",
+  "house": "ハウス",
+  "Create Pod": "ポッド作成",
+  "Create {{resource_name}}": "作成 {{resource_name}}する。",
+  "Create resource_name": "リソース名の作成",
+  "Single user (RWO)": "シングルユーザー（RWO）",
+  "Edit {{kindLabel}} subject": "編集 {{kindLabel}} 件名",
+  "Showing {{shown}} from {{total}} results": "{{total}}の結果から{{shown}}を表示する。",
+  "With the release of <1></1>, the pipelines build strategy has been deprecated. Users should either use Jenkins files directly on Jenkins or use cloud-native CI/CD with Openshift Pipelines. <4></4>": "<1></1>のリリースに伴い、パイプラインのビルド戦略は非推奨となりました。ユーザーは Jenkins ファイルを Jenkins 上で直接使用するか、Openshift Pipelines を使用してクラウドネイティブな CI/CD を使用する必要があります。<4></4>"
+}
