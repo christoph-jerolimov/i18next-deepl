@@ -1,87 +1,37 @@
 import { Command } from 'commander';
-import { glob } from 'glob'
 import fs from 'node:fs/promises';
-import path from 'node:path'; 
-import * as deepl from "deepl-node";
 import { default as colorize } from './colorize.js';
+
+interface Options {
+  language: string;
+  filename: string;
+}
 
 const cmd = new Command();
 
-const sourceLanguage: deepl.SourceLanguageCode = 'en';
-const targetLanguages: deepl.TargetLanguageCode[] = [
-  'de',
-  'fr',
-  'es',
-  // 'hi',
-  'ja',
-  'zh',
-  'ko',
-];
-
 cmd
   .name('count')
-  .action(async () => {
-    const sourceFilenames = await glob(`**/${sourceLanguage}.json`)
+  .requiredOption('--language <string>')
+  .requiredOption('--filename <string>')
+  .action(async (options: Options) => {
+    let translations = 0;
 
-    for (const sourceFilename of sourceFilenames) {
-      let translations = 0;
-
-      console.log('Source:', colorize.filename(sourceFilename), '...');
-
-      const sourceText = await fs.readFile(sourceFilename, { encoding: 'utf-8' });
-      const sourceJson = JSON.parse(sourceText);
-
-      for (const property in sourceJson) {
-        if (!Object.hasOwn(sourceJson, property)) {
-          continue;
-        }
-        translations++;
-        console.log(`- ${colorize.key(property)}: ${colorize.value(sourceJson[property])}`);
+    const sourceText = await fs.readFile(options.filename, { encoding: 'utf-8' });
+    const sourceJson = JSON.parse(sourceText);
+    for (const property in sourceJson) {
+      if (!Object.hasOwn(sourceJson, property)) {
+        continue;
       }
-      console.log();
-
-      for (const targetLanguage of targetLanguages) {
-        const targetFilename = path.join(sourceFilename, `../${targetLanguage}.json`);
-
-        let translatedInSource = 0;
-        let translatedNotInSource = 0;
-        let targetJson: Record<string, string>;
-
-        console.log('Target:', colorize.filename(targetFilename));
-
-        try {
-          const targetText = await fs.readFile(targetFilename, { encoding: 'utf-8' });
-          targetJson = JSON.parse(targetText);
-        } catch (error) {
-          console.log(
-            `Translated from ${colorize.language(sourceLanguage)} to ${colorize.language(targetLanguage)}:`,
-            error,
-          );
-          continue;
-        }
-  
-        for (const property in targetJson) {
-          if (!Object.hasOwn(targetJson, property)) {
-            continue;
-          }
-          if (sourceJson[property]) {
-            translatedInSource++;
-          } else {
-            translatedNotInSource++;
-          }
-          console.log(`- ${colorize.key(property)}: ${colorize.value(targetJson[property])}`);
-        }
-        console.log();
-        console.log(
-          `Translated from ${colorize.language(sourceLanguage)} to ${colorize.language(targetLanguage)}:`,
-          `${colorize.number(translatedInSource)} of ${colorize.number(translations)}`,
-          `(${colorize.percentage(translatedInSource / translations)})`,
-          translatedNotInSource ? ` other translations: ${colorize.number(translatedNotInSource)}` : '',
-          translatedNotInSource ? `(${colorize.percentage(translatedNotInSource / translations)})` : '',
-        );
-        console.log();
-      }
+      // console.log(`- ${colorize.key(property)}: ${colorize.value(sourceJson[property])}`);
+      translations++;
     }
+    console.log(
+      ' ',
+      colorize.language(options.language),
+      colorize.filename(options.filename),
+      '- translations:',
+      colorize.number(translations),
+    );
   });
 
 export default cmd;
