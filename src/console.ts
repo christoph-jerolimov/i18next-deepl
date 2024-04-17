@@ -3,6 +3,7 @@ import { glob } from 'glob';
 import path from 'node:path';
 import { default as count } from './count.js';
 import { default as compare } from './compare.js';
+import { default as translate } from './translate.js';
 
 const cmd = new Command();
 
@@ -15,6 +16,7 @@ cmd
   .action(async (consoleFolder, options: Options) => {
     console.log(consoleFolder, options)
 
+    // TODO
     const sourceLanguage = 'en';
     const targetLanguages = ['ja', 'ko', 'zh', 'de'];
 
@@ -50,6 +52,19 @@ cmd
             { from: 'user' },
           );
         }
+
+        // WIP: Translate DE only
+        const sourceFilename1 = path.join(consoleFolder, sourceFolder, 'en', sourceFilename);
+        const targetFilename2 = sourceFilename1.replace('/en/', '/de/');
+        await translate.parseAsync(
+          [
+            '--source-language', 'en',
+            '--source-filename', sourceFilename1,
+            '--target-language', 'de',
+            '--target-filename', targetFilename2,
+          ],
+          { from: 'user' },
+        );
       }
     }
   });
